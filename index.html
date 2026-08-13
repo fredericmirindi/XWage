@@ -4,77 +4,138 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>XWage — AI Skills Professor</title>
+//fonts.gstatic.com" crossorigin />
+//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#7c3aed;--accent2:#2563eb;--text:#e6edf3;--muted:#9198a1;--user:#1f6feb;}
+/* ===== ONE SOURCE OF TRUTH: grid tokens (Müller-Brockmann) ===== */
+:root{
+--cols:12;
+--bl:8px;            /* baseline unit */
+--lh:24px;           /* leading = 3 x baseline */
+--gutter:24px;
+--margin:72px;
+--pad:48px;          /* spread top/bottom pad = 6 x baseline */
+--maxw:1296px;
+/* ---- grey + gold palette (no gradients) ---- */
+--paper:#f4f3f1;     /* light warm grey paper */
+--panel:#e9e7e3;     /* panel grey */
+--ink:#1c1b19;       /* near-black ink */
+--ink-soft:#6b6862;  /* soft grey ink */
+--line:#c9c6c0;      /* hairline grey */
+--accent:#b8860b;    /* gold accent */
+--accent-soft:#d9b24a;
+/* overlay tints */
+--g-col:rgba(184,134,11,.075);
+--g-edge:rgba(184,134,11,.45);
+--g-base:rgba(120,110,80,.34);
+--g-base-min:rgba(120,110,80,.12);
+}
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;height:100%;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1b2440 0,var(--bg) 55%);color:var(--text);display:flex;flex-direction:column;min-height:100vh;}
-header{padding:28px 20px 16px;text-align:center;border-bottom:1px solid var(--border);}
-header h1{margin:0;font-size:26px;letter-spacing:.3px;}
-header h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
-header p{margin:8px 0 0;color:var(--muted);font-size:14px;}
-.badge{display:inline-block;margin-top:10px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted);}
-.wrap{flex:1;width:100%;max-width:860px;margin:0 auto;padding:18px 16px 0;display:flex;flex-direction:column;}
-.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
-.chip{font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;transition:.15s;}
-.chip:hover{border-color:var(--accent);color:#fff;}
-#chat{flex:1;overflow-y:auto;padding:6px 2px 12px;display:flex;flex-direction:column;gap:14px;}
-.msg{max-width:88%;padding:13px 15px;border-radius:14px;line-height:1.55;font-size:15px;white-space:pre-wrap;word-wrap:break-word;}
-.user{align-self:flex-end;background:var(--user);color:#fff;border-bottom-right-radius:4px;}
-.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border);border-bottom-left-radius:4px;}
-.bot .who{display:block;font-size:11px;color:var(--accent);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;}
-.typing{color:var(--muted);font-style:italic;}
-form{display:flex;gap:10px;padding:14px 0 22px;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--bg) 30%);}
-#q{flex:1;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:15px;outline:none;}
+html,body{margin:0;padding:0;}
+body{
+background:var(--paper);
+color:var(--ink);
+font-family:Inter,system-ui,-apple-system,sans-serif;
+font-size:16px;
+line-height:var(--lh);
+-webkit-font-smoothing:antialiased;
+}
+/* ===== spread + one content box shared by content AND overlay ===== */
+.spread{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;}
+.wrap{position:relative;max-width:var(--maxw);width:100%;margin:0 auto;padding:var(--pad) var(--margin);flex:1;display:flex;flex-direction:column;}
+/* modular grid + subgrid bands */
+.grid{display:grid;grid-template-columns:repeat(var(--cols),1fr);column-gap:var(--gutter);row-gap:var(--lh);}
+.band{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;column-gap:var(--gutter);align-items:start;}
+@supports not (grid-template-columns:subgrid){.band{grid-template-columns:repeat(var(--cols),1fr);}}
+/* ===== masthead ===== */
+.kicker{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 var(--bl);}
+.masthead{grid-column:1 / 9;font-weight:800;font-size:72px;line-height:72px;letter-spacing:-.02em;margin:0;}
+.masthead b{color:var(--accent);font-weight:800;}
+.lede{grid-column:9 / 13;font-size:15px;line-height:var(--lh);color:var(--ink-soft);margin:0;align-self:end;}
+.rule{grid-column:1 / -1;height:2px;background:var(--ink);margin:var(--lh) 0 0;}
+/* ===== numerals band ===== */
+.stat{grid-column:span 4;}
+.numeral{font-weight:800;font-size:56px;line-height:56px;margin:var(--lh) 0 0;letter-spacing:-.02em;}
+.stat .cap{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:var(--bl) 0 0;}
+/* ===== topic chips ===== */
+.shead{grid-column:1 / -1;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:var(--lh) 0 var(--bl);}
+.chips{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:8px;}
+.chip{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;padding:6px 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+/* ===== chat ===== */
+.chat{grid-column:1 / -1;display:flex;flex-direction:column;gap:var(--lh);margin-top:var(--lh);}
+.msg{padding:16px;border:1px solid var(--line);}
+.msg .who{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--bl);}
+.bot{background:var(--panel);max-width:66%;align-self:flex-start;white-space:pre-wrap;}
+.user{background:var(--ink);color:var(--paper);max-width:66%;align-self:flex-end;border-color:var(--ink);}
+.user .who{color:var(--accent-soft);}
+.typing{color:var(--ink-soft);font-style:italic;}
+/* ===== input row ===== */
+.ask{grid-column:1 / -1;display:flex;gap:var(--gutter);margin-top:var(--lh);position:sticky;bottom:0;background:var(--paper);padding:var(--bl) 0 var(--lh);}
+#q{flex:1;padding:14px 16px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;font-size:15px;outline:none;}
 #q:focus{border-color:var(--accent);}
-button{padding:0 22px;border:none;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;font-weight:600;font-size:15px;cursor:pointer;}
-button:disabled{opacity:.5;cursor:not-allowed;}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:10px;border-top:1px solid var(--border);}
+button.send{padding:0 28px;border:none;background:var(--accent);color:#fff;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+button.send:disabled{opacity:.45;cursor:not-allowed;}
+/* ===== folio ===== */
+.folio{grid-column:1 / -1;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:var(--bl);margin-top:var(--lh);}
+/* ===== grid overlay (same content box) ===== */
+.guides{position:absolute;inset:0;pointer-events:none;z-index:60;opacity:0;transition:opacity .26s ease;}
+.grid-on .guides{opacity:1;}
+.guides .cols{position:absolute;top:0;bottom:0;left:var(--margin);right:var(--margin);display:grid;grid-template-columns:repeat(var(--cols),1fr);column-gap:var(--gutter);}
+.guides .col{background:var(--g-col);box-shadow:inset 1px 0 0 var(--g-edge),inset -1px 0 0 var(--g-edge);position:relative;}
+.guides .col span{position:absolute;top:4px;left:0;right:0;text-align:center;font-family:'Space Mono',monospace;font-size:10px;line-height:1;color:var(--accent);}
+.guides .rows{position:absolute;left:var(--margin);right:var(--margin);top:var(--pad);bottom:0;background-image:repeating-linear-gradient(to bottom,var(--g-base) 0 1px,transparent 1px var(--lh)),repeating-linear-gradient(to bottom,var(--g-base-min) 0 1px,transparent 1px var(--bl));}
+.guides .mline{position:absolute;top:0;bottom:0;width:1px;background:var(--g-edge);}
+.guides .mline.l{left:var(--margin);}
+.guides .mline.r{right:var(--margin);}
+/* ===== toggle ===== */
+.toggle{position:fixed;top:18px;right:18px;z-index:200;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:11px 14px;}
+.toggle .dot{width:9px;height:9px;border-radius:50%;background:#555;}
+.grid-on .toggle{background:var(--accent);}
+.grid-on .toggle .dot{background:#fff;}
+@media(max-width:800px){
+:root{--margin:24px;--cols:6;}
+.masthead{grid-column:1 / -1;font-size:48px;line-height:48px;}
+.lede{grid-column:1 / -1;}
+.stat{grid-column:span 2;}
+.bot,.user{max-width:92%;}
+}
 </style>
 </head>
 <body>
-<header>
-<h1>XWage <span class="grad">AI Skills Professor</span></h1>
-<p>Ask a Harvard-style professor about the AI skills that command the highest wage premiums.</p>
-<span class="badge">Powered by Gemini · Secured via Cloudflare Workers</span>
-</header>
-<main class="wrap">
-<div class="chips" id="chips"></div>
-<div id="chat"></div>
-<form id="f">
+<button class="toggle" id="gridToggle" aria-pressed="false"><span class="dot"></span><span class="lbl">Show grid</span></button>
+<section class="spread">
+<div class="wrap">
+<div class="grid">
+
+<div class="band">
+<div class="masthead-box" style="grid-column:1 / 9;">
+<p class="kicker">The AI Wage Premium · A Study in 14 Skills</p>
+<h1 class="masthead">XWage <b>Professor</b></h1>
+</div>
+<p class="lede">A Harvard-style professor answering questions on the fourteen AI skills that command the highest wage premiums. Grounded in an empirical study of 1,500 job listings. Press <b>G</b> to reveal the grid.</p>
+</div>
+
+<div class="band"><div class="rule"></div></div>
+
+<div class="band">
+<div class="stat"><div class="numeral">$61k</div><div class="cap">System Design premium</div></div>
+<div class="stat"><div class="numeral">$31k</div><div class="cap">Prompt Engineering</div></div>
+<div class="stat"><div class="numeral">$28k</div><div class="cap">LangChain</div></div>
+</div>
+
+<div class="band"><p class="shead">Ask about a skill</p></div>
+<div class="band"><div class="chips" id="chips"></div></div>
+
+<div class="band"><div class="chat" id="chat"></div></div>
+
+<div class="band">
+<div class="ask">
 <input id="q" type="text" placeholder="e.g. Why does System Design command the highest wage premium?" autocomplete="off" />
-<button id="send" type="submit">Ask</button>
-</form>
-</main>
-<footer>XWage · Research &amp; educational use only · Do not sell this product. By Derrick Mirindi, David Sinkhonde &amp; Frederic Mirindi.</footer>
-<script>
-const WORKER_URL = "https://xwage-gemini.mirindiderick.workers.dev/";
-const TOPICS = ["System Design","Prompt Engineering","LLM Fine-tuning","RAG","Ent. Architecture","MLOps","LangChain","Tool Use","PyTorch","Python","Cloud","SQL","Documentation","Business Analysis"];
-const chat = document.getElementById("chat");
-const form = document.getElementById("f");
-const input = document.getElementById("q");
-const sendBtn = document.getElementById("send");
-const chips = document.getElementById("chips");
-TOPICS.forEach(function(t){var c=document.createElement("span");c.className="chip";c.textContent=t;c.onclick=function(){input.value="Explain "+t+" and why it matters for AI salaries.";input.focus();};chips.appendChild(c);});
-function addMsg(text, cls, who){var d=document.createElement("div");d.className="msg "+cls;if(who){var w=document.createElement("span");w.className="who";w.textContent=who;d.appendChild(w);}d.appendChild(document.createTextNode(text));chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;}
-addMsg("Welcome. I am your XWage Professor. Ask me anything about the fourteen AI skills that drive wage premiums — System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot","Professor");
-form.addEventListener("submit", async function(e){
-e.preventDefault();
-var question=input.value.trim();
-if(!question) return;
-addMsg(question,"user");
-input.value="";
-sendBtn.disabled=true;
-var typing=addMsg("Thinking…","bot typing","Professor");
-try{
-var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:question})});
-var data=await res.json();
-typing.remove();
-if(data.answer){addMsg(data.answer,"bot","Professor");}else{addMsg("Error: "+(data.error||"Unknown error"),"bot","Professor");}
-}catch(err){typing.remove();addMsg("Network error: "+err,"bot","Professor");}
-sendBtn.disabled=false;
-input.focus();
-});
-</script>
-</body>
-</html>
+<button class="send" id="send" type="button">Ask</button>
+</div>
+</div>
+
+<div class="band"><div class="folio"><span>XWage — Research &amp; educational use only. Do not sell this product.</span><span>Mirindi · Sinkhonde · Mirindi / 01</span></div></div>
+
+</div
