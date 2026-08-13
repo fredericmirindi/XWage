@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XWage — AI Skills Professor</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#7c3aed;--accent2:#2563eb;--text:#e6edf3;--muted:#9198a1;--user:#1f6feb;}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1b2440 0,var(--bg) 55%);color:var(--text);display:flex;flex-direction:column;min-height:100vh;}
+header{padding:28px 20px 16px;text-align:center;border-bottom:1px solid var(--border);}
+header h1{margin:0;font-size:26px;letter-spacing:.3px;}
+header h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+header p{margin:8px 0 0;color:var(--muted);font-size:14px;}
+.badge{display:inline-block;margin-top:10px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted);}
+.wrap{flex:1;width:100%;max-width:860px;margin:0 auto;padding:18px 16px 0;display:flex;flex-direction:column;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+.chip{font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;transition:.15s;}
+.chip:hover{border-color:var(--accent);color:#fff;}
+#chat{flex:1;overflow-y:auto;padding:6px 2px 12px;display:flex;flex-direction:column;gap:14px;}
+.msg{max-width:88%;padding:13px 15px;border-radius:14px;line-height:1.55;font-size:15px;white-space:pre-wrap;word-wrap:break-word;}
+.user{align-self:flex-end;background:var(--user);color:#fff;border-bottom-right-radius:4px;}
+.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--border);border-bottom-left-radius:4px;}
+.bot .who{display:block;font-size:11px;color:var(--accent);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;}
+.typing{color:var(--muted);font-style:italic;}
+form{display:flex;gap:10px;padding:14px 0 22px;position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--bg) 30%);}
+#q{flex:1;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:15px;outline:none;}
+#q:focus{border-color:var(--accent);}
+button{padding:0 22px;border:none;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;font-weight:600;font-size:15px;cursor:pointer;}
+button:disabled{opacity:.5;cursor:not-allowed;}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+<header>
+<h1>XWage <span class="grad">AI Skills Professor</span></h1>
+<p>Ask a Harvard-style professor about the AI skills that command the highest wage premiums.</p>
+<span class="badge">Powered by Gemini · Secured via Cloudflare Workers</span>
+</header>
+<main class="wrap">
+<div class="chips" id="chips"></div>
+<div id="chat"></div>
+<form id="f">
+<input id="q" type="text" placeholder="e.g. Why does System Design command the highest wage premium?" autocomplete="off" />
+<button id="send" type="submit">Ask</button>
+</form>
+</main>
+<footer>XWage · Research &amp; educational use only · Do not sell this product. By Derrick Mirindi, David Sinkhonde &amp; Frederic Mirindi.</footer>
+<script>
+const WORKER_URL = "https://xwage-gemini.mirindiderick.workers.dev/";
+const TOPICS = ["System Design","Prompt Engineering","LLM Fine-tuning","RAG","Ent. Architecture","MLOps","LangChain","Tool Use","PyTorch","Python","Cloud","SQL","Documentation","Business Analysis"];
+const chat = document.getElementById("chat");
+const form = document.getElementById("f");
+const input = document.getElementById("q");
+const sendBtn = document.getElementById("send");
+const chips = document.getElementById("chips");
+TOPICS.forEach(function(t){var c=document.createElement("span");c.className="chip";c.textContent=t;c.onclick=function(){input.value="Explain "+t+" and why it matters for AI salaries.";input.focus();};chips.appendChild(c);});
+function addMsg(text, cls, who){var d=document.createElement("div");d.className="msg "+cls;if(who){var w=document.createElement("span");w.className="who";w.textContent=who;d.appendChild(w);}d.appendChild(document.createTextNode(text));chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;}
+addMsg("Welcome. I am your XWage Professor. Ask me anything about the fourteen AI skills that drive wage premiums — System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot","Professor");
+form.addEventListener("submit", async function(e){
+e.preventDefault();
+var question=input.value.trim();
+if(!question) return;
+addMsg(question,"user");
+input.value="";
+sendBtn.disabled=true;
+var typing=addMsg("Thinking…","bot typing","Professor");
+try{
+var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:question})});
+var data=await res.json();
+typing.remove();
+if(data.answer){addMsg(data.answer,"bot","Professor");}else{addMsg("Error: "+(data.error||"Unknown error"),"bot","Professor");}
+}catch(err){typing.remove();addMsg("Network error: "+err,"bot","Professor");}
+sendBtn.disabled=false;
+input.focus();
+});
+</script>
+</body>
+</html>
