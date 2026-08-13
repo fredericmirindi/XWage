@@ -4,27 +4,28 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>XWage — AI Skills Professor</title>
-//fonts.gstatic.com" crossorigin />
-//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-/* ===== ONE SOURCE OF TRUTH: grid tokens (Müller-Brockmann) ===== */
+/* ===== ONE SOURCE OF TRUTH: grid tokens (Muller-Brockmann) ===== */
 :root{
 --cols:12;
---bl:8px;            /* baseline unit */
---lh:24px;           /* leading = 3 x baseline */
+--bl:8px;
+--lh:24px;
 --gutter:24px;
 --margin:72px;
---pad:48px;          /* spread top/bottom pad = 6 x baseline */
+--pad:48px;
 --maxw:1296px;
-/* ---- grey + gold palette (no gradients) ---- */
---paper:#f4f3f1;     /* light warm grey paper */
---panel:#e9e7e3;     /* panel grey */
---ink:#1c1b19;       /* near-black ink */
---ink-soft:#6b6862;  /* soft grey ink */
---line:#c9c6c0;      /* hairline grey */
---accent:#b8860b;    /* gold accent */
+/* grey + gold palette (no gradients) */
+--paper:#f4f3f1;
+--panel:#e9e7e3;
+--ink:#1c1b19;
+--ink-soft:#6b6862;
+--line:#c9c6c0;
+--accent:#b8860b;
 --accent-soft:#d9b24a;
-/* overlay tints */
+/* overlay tints (gold) */
 --g-col:rgba(184,134,11,.075);
 --g-edge:rgba(184,134,11,.45);
 --g-base:rgba(120,110,80,.34);
@@ -32,14 +33,7 @@
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
-body{
-background:var(--paper);
-color:var(--ink);
-font-family:Inter,system-ui,-apple-system,sans-serif;
-font-size:16px;
-line-height:var(--lh);
--webkit-font-smoothing:antialiased;
-}
+body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:var(--lh);-webkit-font-smoothing:antialiased;}
 /* ===== spread + one content box shared by content AND overlay ===== */
 .spread{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;}
 .wrap{position:relative;max-width:var(--maxw);width:100%;margin:0 auto;padding:var(--pad) var(--margin);flex:1;display:flex;flex-direction:column;}
@@ -104,38 +98,76 @@ button.send:disabled{opacity:.45;cursor:not-allowed;}
 </head>
 <body>
 <button class="toggle" id="gridToggle" aria-pressed="false"><span class="dot"></span><span class="lbl">Show grid</span></button>
-<section class="spread">
+<div class="spread">
 <div class="wrap">
 <div class="grid">
-
 <div class="band">
-<div class="masthead-box" style="grid-column:1 / 9;">
+<div style="grid-column:1 / -1;">
 <p class="kicker">The AI Wage Premium · A Study in 14 Skills</p>
+</div>
 <h1 class="masthead">XWage <b>Professor</b></h1>
-</div>
 <p class="lede">A Harvard-style professor answering questions on the fourteen AI skills that command the highest wage premiums. Grounded in an empirical study of 1,500 job listings. Press <b>G</b> to reveal the grid.</p>
+<div class="rule"></div>
 </div>
-
-<div class="band"><div class="rule"></div></div>
-
 <div class="band">
 <div class="stat"><div class="numeral">$61k</div><div class="cap">System Design premium</div></div>
 <div class="stat"><div class="numeral">$31k</div><div class="cap">Prompt Engineering</div></div>
 <div class="stat"><div class="numeral">$28k</div><div class="cap">LangChain</div></div>
 </div>
-
-<div class="band"><p class="shead">Ask about a skill</p></div>
-<div class="band"><div class="chips" id="chips"></div></div>
-
-<div class="band"><div class="chat" id="chat"></div></div>
-
+<div class="band">
+<p class="shead">Ask about a skill</p>
+<div class="chips" id="chips"></div>
+</div>
+<div class="band">
+<div class="chat" id="chat"></div>
+</div>
 <div class="band">
 <div class="ask">
 <input id="q" type="text" placeholder="e.g. Why does System Design command the highest wage premium?" autocomplete="off" />
-<button class="send" id="send" type="button">Ask</button>
+<button class="send" id="send">Ask</button>
 </div>
 </div>
+<div class="band">
+<div class="folio"><span>XWage — Research &amp; educational use only. Do not sell this product.</span><span>Mirindi · Sinkhonde · Mirindi / 01</span></div>
+</div>
+</div>
+<div class="guides" aria-hidden="true">
+<div class="cols"></div>
+<div class="rows"></div>
+<div class="mline l"></div>
+<div class="mline r"></div>
+</div>
+</div>
+</div>
+<script>
+var WORKER_URL="https://xwage-gemini.mirindiderick.workers.dev/";
+var TOPICS=["System Design","Prompt Engineering","LLM Fine-tuning","RAG","Ent. Architecture","MLOps","LangChain","Tool Use","PyTorch","Python","Cloud","SQL","Documentation","Business Analysis"];
 
-<div class="band"><div class="folio"><span>XWage — Research &amp; educational use only. Do not sell this product.</span><span>Mirindi · Sinkhonde · Mirindi / 01</span></div></div>
+/* ---- populate topic chips ---- */
+var chipsEl=document.getElementById("chips");
+TOPICS.forEach(function(t){var b=document.createElement("button");b.className="chip";b.textContent=t;b.addEventListener("click",function(){document.getElementById("q").value="Why does "+t+" command a wage premium?";send();});chipsEl.appendChild(b);});
 
-</div
+/* ---- chat ---- */
+var chat=document.getElementById("chat");
+var qEl=document.getElementById("q");
+var sendBtn=document.getElementById("send");
+function addMsg(who,text,cls){var m=document.createElement("div");m.className="msg "+cls;var w=document.createElement("span");w.className="who";w.textContent=who;var p=document.createElement("div");p.textContent=text;m.appendChild(w);m.appendChild(p);chat.appendChild(m);m.scrollIntoView({behavior:"smooth",block:"end"});return p;}
+addMsg("Professor","Welcome. I am your XWage Professor. Ask me anything about the fourteen AI skills that drive wage premiums \u2014 System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot");
+function send(){var q=qEl.value.trim();if(!q)return;addMsg("You",q,"user");qEl.value="";sendBtn.disabled=true;var out=addMsg("Professor","Thinking\u2026","bot typing");fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})}).then(function(r){return r.json();}).then(function(d){out.parentNode.classList.remove("typing");out.textContent=(d&&(d.answer||d.text||d.reply))||"Sorry, I could not produce an answer.";}).catch(function(e){out.parentNode.classList.remove("typing");out.textContent="Error contacting the professor: "+e.message;}).finally(function(){sendBtn.disabled=false;});}
+sendBtn.addEventListener("click",send);
+qEl.addEventListener("keydown",function(e){if(e.key==="Enter")send();});
+
+/* ---- grid toggle: button + G key ---- */
+var btn=document.getElementById("gridToggle");
+function setGrid(on){document.body.classList.toggle("grid-on",on);if(btn){btn.setAttribute("aria-pressed",on?"true":"false");var l=btn.querySelector(".lbl");if(l)l.textContent=on?"Hide grid":"Show grid";}}
+if(btn)btn.addEventListener("click",function(){setGrid(!document.body.classList.contains("grid-on"));});
+document.addEventListener("keydown",function(e){if((e.key==="g"||e.key==="G")&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&e.target.tagName!=="INPUT"){setGrid(!document.body.classList.contains("grid-on"));}});
+
+/* ---- populate overlay column guides (numbered) ---- */
+document.querySelectorAll(".guides .cols").forEach(function(h){var n=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--cols"),10)||12;for(var i=1;i<=n;i++){var c=document.createElement("div");c.className="col";var s=document.createElement("span");s.textContent=i;c.appendChild(s);h.appendChild(c);}});
+
+/* ---- OPTICAL ALIGNMENT: display ink on the line, not its box ---- */
+(function(){var cvs=document.createElement("canvas"),ctx=cvs.getContext("2d");var sel=".masthead,.numeral,.shead";function align(){document.querySelectorAll(sel).forEach(function(el){el.style.marginLeft="0px";var cs=getComputedStyle(el),ch=(el.textContent||"").trim().charAt(0);if(!ch)return;if(cs.textTransform==="uppercase")ch=ch.toUpperCase();ctx.font=cs.fontStyle+" "+cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;ctx.textAlign="left";var abl=ctx.measureText(ch).actualBoundingBoxLeft;if(isFinite(abl))el.style.marginLeft=abl.toFixed(2)+"px";});}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(align);}align();var t;window.addEventListener("resize",function(){clearTimeout(t);t=setTimeout(align,120);});})();
+</script>
+</body>
+</html>
