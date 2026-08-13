@@ -152,7 +152,7 @@ var chat=document.getElementById("chat");
 var qEl=document.getElementById("q");
 var sendBtn=document.getElementById("send");
 function addMsg(who,text,cls){var m=document.createElement("div");m.className="msg "+cls;var w=document.createElement("span");w.className="who";w.textContent=who;var p=document.createElement("div");p.textContent=text;m.appendChild(w);m.appendChild(p);chat.appendChild(m);m.scrollIntoView({behavior:"smooth",block:"end"});return p;}
-addMsg("Professor","Welcome. I am your XWage Professor. Ask me anything about the fourteen AI skills that drive wage premiums \u2014 System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot");
+addMsg("Professor","Welcome. I am your XWage Agent. Ask me anything about the fourteen AI skills that drive wage premiums \u2014 System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot");
 function send(){var q=qEl.value.trim();if(!q)return;addMsg("You",q,"user");qEl.value="";sendBtn.disabled=true;var out=addMsg("Professor","Thinking\u2026","bot typing");fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})}).then(function(r){return r.json();}).then(function(d){out.parentNode.classList.remove("typing");out.textContent=(d&&(d.answer||d.text||d.reply))||"Sorry, I could not produce an answer.";}).catch(function(e){out.parentNode.classList.remove("typing");out.textContent="Error contacting the professor: "+e.message;}).finally(function(){sendBtn.disabled=false;});}
 sendBtn.addEventListener("click",send);
 qEl.addEventListener("keydown",function(e){if(e.key==="Enter")send();});
