@@ -20,11 +20,13 @@
 /* grey + gold palette (no gradients) */
 --paper:#f4f3f1;
 --panel:#e9e7e3;
+--panel-2:#efedea;
 --ink:#1c1b19;
 --ink-soft:#6b6862;
 --line:#c9c6c0;
 --accent:#b8860b;
 --accent-soft:#d9b24a;
+--accent-wash:rgba(184,134,11,.08);
 /* overlay tints (gold) */
 --g-col:rgba(184,134,11,.075);
 --g-edge:rgba(184,134,11,.45);
@@ -51,24 +53,47 @@ body{background:var(--paper);color:var(--ink);font-family:Inter,system-ui,-apple
 .stat{grid-column:span 4;}
 .numeral{font-weight:800;font-size:56px;line-height:56px;margin:var(--lh) 0 0;letter-spacing:-.02em;}
 .stat .cap{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:var(--bl) 0 0;}
-/* ===== topic chips ===== */
-.shead{grid-column:1 / -1;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:var(--lh) 0 var(--bl);}
-.chips{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:8px;}
-.chip{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;padding:6px 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;}
-.chip:hover{border-color:var(--accent);color:var(--accent);}
+/* ===== section head ===== */
+.shead{grid-column:1 / -1;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:var(--lh) 0 var(--bl);display:flex;justify-content:space-between;align-items:baseline;}
+.shead .sub{color:var(--ink-soft);text-transform:none;letter-spacing:.04em;font-size:11px;}
+/* ===== skill widget cards ===== */
+.skills{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gutter);}
+@media(max-width:1100px){.skills{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:800px){.skills{grid-template-columns:repeat(2,1fr);}}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;transition:border-color .18s ease, background .18s ease, transform .18s ease;cursor:pointer;text-align:left;font:inherit;color:inherit;}
+.card:hover{border-color:var(--accent);background:var(--panel-2);}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.card .row{display:flex;align-items:center;gap:10px;}
+.card .icon{flex:0 0 36px;width:36px;height:36px;border:1px solid var(--line);background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--accent);}
+.card .icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.card .rank{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--ink-soft);text-transform:uppercase;margin-left:auto;}
+.card .name{font-weight:700;font-size:15px;line-height:20px;letter-spacing:-.005em;margin:0;}
+.card .premium{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--accent);margin:0;}
+.card .desc{font-size:12.5px;line-height:18px;color:var(--ink-soft);margin:0;}
+.card .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line);}
+.card .ask-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);}
+.card:hover .ask-lbl{color:var(--accent);}
+.card .link{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:1px;}
+.card .link:hover{color:var(--accent);border-bottom-color:var(--accent);}
+.card .link svg{width:10px;height:10px;vertical-align:-1px;margin-left:3px;stroke:currentColor;fill:none;stroke-width:2;}
 /* ===== chat ===== */
 .chat{grid-column:1 / -1;display:flex;flex-direction:column;gap:var(--lh);margin-top:var(--lh);}
 .msg{padding:16px;border:1px solid var(--line);}
 .msg .who{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--bl);}
-.bot{background:var(--panel);max-width:66%;align-self:flex-start;white-space:pre-wrap;}
-.user{background:var(--ink);color:var(--paper);max-width:66%;align-self:flex-end;border-color:var(--ink);}
+.msg .body{white-space:pre-wrap;word-wrap:break-word;}
+.msg .body strong{font-weight:700;color:inherit;}
+.msg .body em{font-style:italic;}
+.msg .body code{font-family:'Space Mono',monospace;font-size:.92em;background:rgba(184,134,11,.08);padding:1px 5px;border:1px solid var(--line);}
+.bot{background:var(--panel);max-width:72%;align-self:flex-start;}
+.user{background:var(--ink);color:var(--paper);max-width:72%;align-self:flex-end;border-color:var(--ink);}
 .user .who{color:var(--accent-soft);}
-.typing{color:var(--ink-soft);font-style:italic;}
+.typing .body{color:var(--ink-soft);font-style:italic;}
 /* ===== input row ===== */
-.ask{grid-column:1 / -1;display:flex;gap:var(--gutter);margin-top:var(--lh);position:sticky;bottom:0;background:var(--paper);padding:var(--bl) 0 var(--lh);}
+.ask{grid-column:1 / -1;display:flex;gap:var(--gutter);margin-top:var(--lh);position:sticky;bottom:0;background:var(--paper);padding:var(--bl) 0 var(--lh);z-index:5;}
 #q{flex:1;padding:14px 16px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;font-size:15px;outline:none;}
 #q:focus{border-color:var(--accent);}
 button.send{padding:0 28px;border:none;background:var(--accent);color:#fff;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+button.send:hover:not(:disabled){background:var(--ink);}
 button.send:disabled{opacity:.45;cursor:not-allowed;}
 /* ===== folio ===== */
 .folio{grid-column:1 / -1;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:var(--bl);margin-top:var(--lh);}
@@ -88,11 +113,13 @@ button.send:disabled{opacity:.45;cursor:not-allowed;}
 .grid-on .toggle{background:var(--accent);}
 .grid-on .toggle .dot{background:#fff;}
 @media(max-width:800px){
-:root{--margin:24px;--cols:6;}
-.masthead{grid-column:1 / -1;font-size:48px;line-height:48px;}
+:root{--margin:24px;--cols:6;--pad:32px;}
+.masthead{grid-column:1 / -1;font-size:44px;line-height:46px;}
 .lede{grid-column:1 / -1;}
 .stat{grid-column:span 2;}
-.bot,.user{max-width:92%;}
+.numeral{font-size:38px;line-height:40px;}
+.bot,.user{max-width:94%;}
+.toggle{top:10px;right:10px;padding:8px 10px;font-size:10px;}
 }
 </style>
 </head>
@@ -115,8 +142,8 @@ button.send:disabled{opacity:.45;cursor:not-allowed;}
 <div class="stat"><div class="numeral">$28k</div><div class="cap">LangChain</div></div>
 </div>
 <div class="band">
-<p class="shead">Ask about a skill</p>
-<div class="chips" id="chips"></div>
+<p class="shead"><span>The Fourteen Skills</span><span class="sub">Tap a card to ask · icons open the official reference</span></p>
+<div class="skills" id="skills"></div>
 </div>
 <div class="band">
 <div class="chat" id="chat"></div>
@@ -139,21 +166,144 @@ button.send:disabled{opacity:.45;cursor:not-allowed;}
 </div>
 </div>
 </div>
+
+<!-- ===== SVG ICON LIBRARY (referenced by skill cards) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-system" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7"/><rect x="14" y="4" width="7" height="7"/><rect x="3" y="15" width="7" height="5"/><rect x="14" y="15" width="7" height="5"/><path d="M10 7.5h4M10 17.5h4M6.5 11v4M17.5 11v4"/></symbol>
+    <symbol id="i-prompt" viewBox="0 0 24 24"><path d="M4 5h12l4 4v10H4z"/><path d="M8 10h8M8 14h5"/><path d="M18 3v3M20 4.5h-3"/></symbol>
+    <symbol id="i-finetune" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="17" r="2"/><path d="M3 7h1M8 7h13M3 12h13M20 12h1M3 17h1M8 17h13"/></symbol>
+    <symbol id="i-rag" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5"/><path d="M5 11v6c0 1.4 3.1 2.5 7 2.5"/><path d="M15 17l2 2 4-4"/></symbol>
+    <symbol id="i-arch" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 20V9l7-5 7 5v11"/><path d="M9 20v-6h6v6"/><path d="M12 4v3"/></symbol>
+    <symbol id="i-mlops" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+    <symbol id="i-langchain" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 1 0-5.6l2-2a4 4 0 0 1 5.6 5.6l-1 1"/><path d="M14 10a4 4 0 0 1 0 5.6l-2 2a4 4 0 0 1-5.6-5.6l1-1"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"/><path d="M14 14l6 6"/></symbol>
+    <symbol id="i-pytorch" viewBox="0 0 24 24"><path d="M12 3l5 5a7 7 0 1 1-10 0z"/><circle cx="14" cy="8" r="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-python" viewBox="0 0 24 24"><path d="M12 3c-3 0-5 1-5 3v3h6v1H5c-2 0-3 2-3 5s1 5 3 5h2v-3c0-2 2-3 4-3h4c2 0 3-1 3-3V6c0-2-2-3-6-3z"/><circle cx="9" cy="6" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 7 18z"/></symbol>
+    <symbol id="i-sql" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="2.5"/><path d="M5 5v14c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V5"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></symbol>
+    <symbol id="i-docs" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h7M9 16h7M9 8h3"/></symbol>
+    <symbol id="i-analysis" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/><circle cx="10" cy="4" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v6H4V6h6"/></symbol>
+  </defs>
+</svg>
+
 <script>
 var WORKER_URL="https://xwage-gemini.mirindiderick.workers.dev/";
-var TOPICS=["System Design","Prompt Engineering","LLM Fine-tuning","RAG","Ent. Architecture","MLOps","LangChain","Tool Use","PyTorch","Python","Cloud","SQL","Documentation","Business Analysis"];
 
-/* ---- populate topic chips ---- */
-var chipsEl=document.getElementById("chips");
-TOPICS.forEach(function(t){var b=document.createElement("button");b.className="chip";b.textContent=t;b.addEventListener("click",function(){document.getElementById("q").value="Why does "+t+" command a wage premium?";send();});chipsEl.appendChild(b);});
+/* ---- 14 skills with icon + official reference link ---- */
+var SKILLS=[
+  {name:"System Design",       icon:"i-system",    premium:"+$61,000",  desc:"Architect scalable, reliable AI-powered systems end-to-end.",             url:"https://github.com/donnemartin/system-design-primer"},
+  {name:"Prompt Engineering",  icon:"i-prompt",    premium:"+$31,000",  desc:"Craft, evaluate and productionize prompts for large language models.",   url:"https://www.promptingguide.ai/"},
+  {name:"LLM Fine-tuning",     icon:"i-finetune",  premium:"+$30,000",  desc:"Adapt foundation models to domain data with SFT, LoRA and RLHF.",        url:"https://huggingface.co/docs/transformers/training"},
+  {name:"RAG",                 icon:"i-rag",       premium:"+$29,000",  desc:"Retrieval-Augmented Generation with vector stores and rerankers.",       url:"https://python.langchain.com/docs/tutorials/rag/"},
+  {name:"Ent. Architecture",   icon:"i-arch",      premium:"+$28,500",  desc:"Enterprise architecture patterns for AI platforms and data mesh.",       url:"https://pubs.opengroup.org/togaf-standard/"},
+  {name:"MLOps",               icon:"i-mlops",     premium:"+$28,000",  desc:"CI/CD, monitoring and lifecycle management for ML systems.",             url:"https://ml-ops.org/"},
+  {name:"LangChain",           icon:"i-langchain", premium:"+$28,000",  desc:"Framework for chaining LLM calls, tools, agents and memory.",            url:"https://python.langchain.com/docs/introduction/"},
+  {name:"Tool Use",            icon:"i-tool",      premium:"+$26,000",  desc:"Function calling and agentic tool orchestration for LLMs.",              url:"https://platform.openai.com/docs/guides/function-calling"},
+  {name:"PyTorch",             icon:"i-pytorch",   premium:"+$25,000",  desc:"Deep-learning framework for research and production.",                    url:"https://pytorch.org/docs/stable/index.html"},
+  {name:"Python",              icon:"i-python",    premium:"+$22,000",  desc:"Lingua franca of AI/ML — libraries, packaging and typing.",              url:"https://docs.python.org/3/"},
+  {name:"Cloud",               icon:"i-cloud",     premium:"+$21,000",  desc:"AWS, GCP and Azure services for training and serving models.",           url:"https://aws.amazon.com/machine-learning/"},
+  {name:"SQL",                 icon:"i-sql",       premium:"+$18,000",  desc:"Structured data querying, warehousing and analytics engineering.",       url:"https://www.postgresql.org/docs/current/tutorial-sql.html"},
+  {name:"Documentation",       icon:"i-docs",      premium:"+$15,000",  desc:"Clear technical writing, model cards, ADRs and knowledge bases.",        url:"https://diataxis.fr/"},
+  {name:"Business Analysis",   icon:"i-analysis",  premium:"+$14,000",  desc:"Translate business needs into AI product requirements and KPIs.",        url:"https://www.iiba.org/standards-and-resources/babok/"}
+];
+
+/* ---- render skill cards ---- */
+(function(){
+  var host=document.getElementById("skills");
+  var frag=document.createDocumentFragment();
+  SKILLS.forEach(function(s,i){
+    var card=document.createElement("button");
+    card.type="button";
+    card.className="card";
+    card.setAttribute("aria-label","Ask about "+s.name);
+    card.innerHTML=
+      '<div class="row">'+
+        '<span class="icon" aria-hidden="true"><svg><use href="#'+s.icon+'"/></svg></span>'+
+        '<span class="rank">No. '+String(i+1).padStart(2,"0")+'</span>'+
+      '</div>'+
+      '<p class="name">'+s.name+'</p>'+
+      '<p class="premium">'+s.premium+' wage premium</p>'+
+      '<p class="desc">'+s.desc+'</p>'+
+      '<div class="foot">'+
+        '<span class="ask-lbl">Ask the Agent →</span>'+
+        '<a class="link" href="'+s.url+'" target="_blank" rel="noopener noreferrer">Official ref <svg><use href="#i-ext"/></svg></a>'+
+      '</div>';
+    card.addEventListener("click",function(e){
+      if(e.target.closest("a"))return; /* let link open normally */
+      qEl.value="Why does "+s.name+" command a wage premium, and how do I develop it?";
+      send();
+    });
+    /* stop card click when link clicked */
+    var a=card.querySelector("a.link");
+    a.addEventListener("click",function(e){e.stopPropagation();});
+    frag.appendChild(card);
+  });
+  host.appendChild(frag);
+})();
 
 /* ---- chat ---- */
 var chat=document.getElementById("chat");
 var qEl=document.getElementById("q");
 var sendBtn=document.getElementById("send");
-function addMsg(who,text,cls){var m=document.createElement("div");m.className="msg "+cls;var w=document.createElement("span");w.className="who";w.textContent=who;var p=document.createElement("div");p.textContent=text;m.appendChild(w);m.appendChild(p);chat.appendChild(m);m.scrollIntoView({behavior:"smooth",block:"end"});return p;}
-addMsg("Professor","Welcome. I am your XWage Agent. Ask me anything about the fourteen AI skills that drive wage premiums \u2014 System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more.","bot");
-function send(){var q=qEl.value.trim();if(!q)return;addMsg("You",q,"user");qEl.value="";sendBtn.disabled=true;var out=addMsg("Professor","Thinking\u2026","bot typing");fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})}).then(function(r){return r.json();}).then(function(d){out.parentNode.classList.remove("typing");out.textContent=(d&&(d.answer||d.text||d.reply))||"Sorry, I could not produce an answer.";}).catch(function(e){out.parentNode.classList.remove("typing");out.textContent="Error contacting the professor: "+e.message;}).finally(function(){sendBtn.disabled=false;});}
+
+/* Strip markdown emphasis and format cleanly for the DOM.
+   - Removes literal ** ** wrappers and converts to <strong> when balanced,
+     otherwise just drops the asterisks so no ** ever reaches the user.
+   - Converts *italic* to <em>, `code` to <code>.
+   - Escapes HTML first for safety. */
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function formatAnswer(raw){
+  if(raw==null)return "";
+  var s=escapeHtml(String(raw));
+  /* code spans first so their contents aren't processed further */
+  s=s.replace(/`([^`\n]+)`/g,function(_,c){return "<code>"+c+"</code>";});
+  /* bold: **text** or __text__ */
+  s=s.replace(/\*\*([\s\S]+?)\*\*/g,"<strong>$1</strong>");
+  s=s.replace(/__([\s\S]+?)__/g,"<strong>$1</strong>");
+  /* italic: *text* (not touching ** which is already gone) or _text_ */
+  s=s.replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g,"$1<em>$2</em>");
+  s=s.replace(/(^|[^_])_([^_\n]+?)_(?!_)/g,"$1<em>$2</em>");
+  /* markdown headings ## Title -> bold line */
+  s=s.replace(/^\s{0,3}#{1,6}\s+(.+)$/gm,"<strong>$1</strong>");
+  /* nuke any stray leftover asterisks so no ** ever reaches the user */
+  s=s.replace(/\*+/g,"");
+  return s;
+}
+
+function addMsg(who,text,cls,isHtml){
+  var m=document.createElement("div");
+  m.className="msg "+cls;
+  var w=document.createElement("span");w.className="who";w.textContent=who;
+  var p=document.createElement("div");p.className="body";
+  if(isHtml){p.innerHTML=text;}else{p.textContent=text;}
+  m.appendChild(w);m.appendChild(p);
+  chat.appendChild(m);
+  m.scrollIntoView({behavior:"smooth",block:"end"});
+  return p;
+}
+
+addMsg("Agent","Welcome. I am your XWage Agent. Ask me anything about the fourteen AI skills that drive wage premiums \u2014 System Design, Prompt Engineering, RAG, MLOps, LangChain, PyTorch, and more. Click any card above to explore a skill or open its official reference.","bot",false);
+
+function send(){
+  var q=qEl.value.trim();if(!q)return;
+  addMsg("You",q,"user",false);
+  qEl.value="";sendBtn.disabled=true;
+  var out=addMsg("Agent","Thinking\u2026","bot typing",false);
+  fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      out.parentNode.classList.remove("typing");
+      var raw=(d&&(d.answer||d.text||d.reply))||"Sorry, I could not produce an answer.";
+      out.innerHTML=formatAnswer(raw);
+    })
+    .catch(function(e){
+      out.parentNode.classList.remove("typing");
+      out.textContent="Error contacting the Agent: "+e.message;
+    })
+    .finally(function(){sendBtn.disabled=false;qEl.focus();});
+}
 sendBtn.addEventListener("click",send);
 qEl.addEventListener("keydown",function(e){if(e.key==="Enter")send();});
 
